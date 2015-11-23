@@ -16,7 +16,6 @@ public class TileScript : MonoBehaviour {
 	}
     void OnMouseDown()
     {
-        Debug.Log("jemarche");
         CanvaManager.Instance.ClickListener(gameObject.transform);
     }
 }
