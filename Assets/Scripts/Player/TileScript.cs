@@ -5,6 +5,10 @@ public class TileScript : MonoBehaviour {
 
     public int idPlayer;
 
+    public bool inPlayerRange = true;
+
+    public GameObject monsterInside = null;
+
     public CanvaManager.POSITION myPosition;
 
 	void Start () {
@@ -16,6 +20,9 @@ public class TileScript : MonoBehaviour {
 	}
     void OnMouseDown()
     {
-        CanvaManager.Instance.ClickListener(gameObject.transform);
+        if (inPlayerRange)
+        {
+            CanvaManager.Instance.ClickListener(gameObject.transform);
+        }
     }
 }

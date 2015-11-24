@@ -15,11 +15,12 @@ public class CanvaManager : MonoBehaviour {
     {
         instance = this;
     }
-
     public GameObject[] TilePlayer1; // Left / Mid / Right
     public GameObject[] TilePlayer2; // Left / Mid / Right
     public Canvas[] CanvaPlayer1; // Stat / Player / Spell
     public Canvas[] CanvaPlayer2; // Stat / Player / Spell
+
+    public GameObject[] player = new GameObject[2];
 
     Transform[] tilesSaved;
 
@@ -30,7 +31,7 @@ public class CanvaManager : MonoBehaviour {
         RIGHT
     }
 
-    enum CANVA
+    public enum CANVA
     {
         STAT,
         PLAYER,
@@ -45,20 +46,44 @@ public class CanvaManager : MonoBehaviour {
 	}
 	
 	void Update () {
-
 	}
 
+    POSITION getPosition(Transform t, int id)
+    {
+        if(id == 1)
+        {
+            for(int i = 0; i < 3; ++i)
+            {
+                if (t == TilePlayer1[i].transform)
+                {
+                    return (POSITION)i;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 3; ++i)
+            {
+                if (t == TilePlayer2[i].transform)
+                {
+                    return (POSITION)i;
+                }
+            }
+        }
+        return POSITION.MID;
+    }
 
     void SetPosition(Canvas beforeCanvas, Transform after)
     {
-
         GameObject tileBefore = beforeCanvas.transform.parent.gameObject;
         //Canvas canAfter = after.GetChild(0).gameObject.GetComponent<Canvas>();
 
         if (tileBefore.GetComponent<TileScript>().idPlayer == after.GetComponent<TileScript>().idPlayer)
         {
             beforeCanvas.transform.SetParent(after);
-            beforeCanvas.transform.localPosition = new Vector3(1, 1, -0.20f);
+            beforeCanvas.transform.localPosition = new Vector3(
+            Mathf.Pow(-1, tileBefore.GetComponent<TileScript>().idPlayer), 0, -0.20f);
+            Debug.Log(getPosition(after, after.GetComponent<TileScript>().idPlayer));
 
         }
         else
@@ -70,6 +95,8 @@ public class CanvaManager : MonoBehaviour {
 
     public void ClickListener(Transform t)
     {
+        if (t.GetComponent<TileScript>().idPlayer != TurnManager.Instance.currentPlayer) return;
+
         if(!tilesSaved[0])
         {
             if (t.GetChild(0).gameObject.GetComponent<Canvas>() == CanvaPlayer1[(int)CANVA.PLAYER] || t.GetChild(0).gameObject.GetComponent<Canvas>() == CanvaPlayer2[(int)CANVA.PLAYER])
@@ -90,7 +117,10 @@ public class CanvaManager : MonoBehaviour {
                 SetPosition(CanvaPlayer2[(int)CANVA.PLAYER], tilesSaved[1]);
             }
 
-            replaceOtherCanvas(); 
+            player[t.GetComponent<TileScript>().idPlayer - 1].GetComponent<PlayerScript>().position = getPosition(t, t.GetComponent<TileScript>().idPlayer);
+            replaceOtherCanvas();
+
+            player[t.GetComponent<TileScript>().idPlayer - 1].GetComponent<PlayerScript>().AP--;
         }
     }
 
