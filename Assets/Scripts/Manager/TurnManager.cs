@@ -30,11 +30,6 @@ public class TurnManager : MonoBehaviour {
         currentPlayer = 1;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-        Debug.Log(playerIdList.Count);
-	}
-
     public void Endturn()
     {
         currentPlayer = currentPlayer % playerIdList.Count;
@@ -44,8 +39,13 @@ public class TurnManager : MonoBehaviour {
         {
             EndOfGlobalTurn();
         }
-        
+
         PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().MoveMonsters();
+
+        Debug.Log("current " + currentPlayer);
+
+        PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().AP = PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().MaxAP;
+        PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().UpdateSprites();
     }
 
     public void EndOfGlobalTurn()

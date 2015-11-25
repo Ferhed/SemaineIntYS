@@ -24,7 +24,7 @@ public class PlayerManager : MonoBehaviour {
 
     public List<PlayerScript> playerList;
 
-    public GameObject prefab;
+    public GameObject[] prefab;
 
     // Use this for initialization
     void Start () {
@@ -45,21 +45,22 @@ public class PlayerManager : MonoBehaviour {
 
     public void InstanciatePlayer(int n)
     {
-        GameObject instance = Instantiate(prefab) as GameObject;
+        GameObject instance = Instantiate(prefab[n-1]) as GameObject;
         instance.GetComponent<PlayerScript>().SetId(n);
         TurnManager.instance.playerIdList.Add(n);
         if(n == 1)
         {
             instance.transform.parent = CanvaManager.Instance.CanvaPlayer1[(int)CanvaManager.CANVA.PLAYER].transform;
-            
+            instance.transform.localPosition = new Vector3(0.54f, 0, -0.5f);
+
         }
         else
         {
             instance.transform.parent = CanvaManager.Instance.CanvaPlayer2[(int)CanvaManager.CANVA.PLAYER].transform;
             instance.transform.Rotate(new Vector3(0, 180, 0));
+            instance.transform.localPosition = new Vector3(0.5f, 0.02f, -0.5f);
         }
         CanvaManager.Instance.player[n-1] = instance;
-        instance.transform.localPosition = new Vector3(0.5f, 0, -0.50f);
         
     }
 }

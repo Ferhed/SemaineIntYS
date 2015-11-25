@@ -10,20 +10,42 @@ public class PlayerScript : MonoBehaviour {
     public List<GameObject> monsters;
 
     public int life = 15;
-    public int AP = 3;
+    public int MaxAP = 3;
+    [HideInInspector]public int AP;
+
+    public SpriteRenderer lifeSprite;
+    public SpriteRenderer APSprite;
 
     // Use this for initialization
     void Start () {
+
+        lifeSprite = transform.Find("Life").GetComponent<SpriteRenderer>();
+        APSprite = transform.Find("PAs").GetComponent<SpriteRenderer>();
+
+
         PlayerManager.instance.addPlayer(this);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	    if(AP <= 0)
+
+        AP = 0;
+
+        UpdateSprites();
+    }
+
+    public void UpdateSprites()
+    {
+        lifeSprite.sprite = MenuManager.Instance.lifes[life];
+        APSprite.sprite = MenuManager.Instance.APs[AP];
+
+        if (AP <= 0)
         {
+            Debug.Log(id);
+
             TurnManager.Instance.Endturn();
-            AP = 3;
         }
+    }
+
+    // Update is called once per frame
+    void Update () {
+	    
 	}
 
     public int GetId()
@@ -40,6 +62,7 @@ public class PlayerScript : MonoBehaviour {
     {
         life -= damage;
         Debug.Log(life + " Ouch !");
+        UpdateSprites();
         if (life <= 0)
         {
             Debug.Log("loul j'ai perdu");
@@ -48,10 +71,33 @@ public class PlayerScript : MonoBehaviour {
 
     public void MoveMonsters()
     {
+        List<MonsterScript> deadMonsters = new List<MonsterScript>();
+
         foreach(GameObject monster in monsters)
         {
-            monster.GetComponent<MonsterScript>().doAction(id);
+            if (monster.GetComponent<MonsterScript>().type == MonsterScript.TYPE.OLD)
+            {
+                deadMonsters.Add(monster.GetComponent<MonsterScript>().doOldAction(id));
+            }
+            else if (monster.GetComponent<MonsterScript>().type == MonsterScript.TYPE.FAT)
+            {
+                deadMonsters.Add(monster.GetComponent<MonsterScript>().doFatAction(id));
+            }
+            else
+            {
+                deadMonsters.Add(monster.GetComponent<MonsterScript>().doAction(id));
+            }
+            monster.GetComponent<MonsterScript>().UpdateSprites();
         }
+
+        foreach (MonsterScript monster in deadMonsters)
+        {
+            if (monster)
+            {
+                monster.destroy();
+            }
+        }
+        deadMonsters.Clear();
     }
 
 }

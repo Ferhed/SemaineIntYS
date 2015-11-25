@@ -3,7 +3,25 @@ using System.Collections;
 
 public class MenuManager : MonoBehaviour {
 
-	// Use this for initialization
+    static MenuManager instance;
+    public static MenuManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+    void Awake()
+    {
+        instance = this;
+    }
+
+    public Sprite[] lifes;
+    public Sprite[] APs;
+    public Sprite[] attacks;
+    public Sprite[] MPs;
+
+    // Use this for initialization
     void Start()
     {
     }
@@ -49,7 +67,7 @@ public class MenuManager : MonoBehaviour {
     {
         float size = currentCanva.sizeDelta.x;
 
-        while (size > 0.2f)
+        while (size > 0.4f)
         {
             size -= 0.1f;
             currentCanva.sizeDelta = new Vector2(size, 1);

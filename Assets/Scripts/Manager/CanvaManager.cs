@@ -83,7 +83,6 @@ public class CanvaManager : MonoBehaviour {
             beforeCanvas.transform.SetParent(after);
             beforeCanvas.transform.localPosition = new Vector3(
             Mathf.Pow(-1, tileBefore.GetComponent<TileScript>().idPlayer), 0, -0.20f);
-            Debug.Log(getPosition(after, after.GetComponent<TileScript>().idPlayer));
 
         }
         else
@@ -121,6 +120,7 @@ public class CanvaManager : MonoBehaviour {
             replaceOtherCanvas();
 
             player[t.GetComponent<TileScript>().idPlayer - 1].GetComponent<PlayerScript>().AP--;
+            player[t.GetComponent<TileScript>().idPlayer - 1].GetComponent<PlayerScript>().UpdateSprites();
         }
     }
 
