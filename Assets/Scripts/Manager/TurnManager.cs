@@ -17,13 +17,13 @@ public class TurnManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
-        DontDestroyOnLoad(gameObject);
 
         playerIdList = new List<int>();
     }
 
     public List<int> playerIdList;
     public int currentPlayer;
+    public bool gameFinished = false;
 
     // Use this for initialization
     void Start () {
@@ -41,16 +41,17 @@ public class TurnManager : MonoBehaviour {
         }
 
         PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().MoveMonsters();
-
-        Debug.Log("current " + currentPlayer);
+        
 
         PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().AP = PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().MaxAP;
         PlayerManager.Instance.playerList[currentPlayer - 1].GetComponent<PlayerScript>().UpdateSprites();
+
+        MenuManager.Instance.Affichage("A toi de jouer",currentPlayer-1,false);
+        MenuManager.Instance.Affichage("A ton adversaire",currentPlayer%2,false);
     }
 
     public void EndOfGlobalTurn()
     {
-        Debug.Log("fin de tour global");
     }
 
     public bool canPlay(int idPlayer)

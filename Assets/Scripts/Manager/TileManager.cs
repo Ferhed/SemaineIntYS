@@ -16,6 +16,7 @@ public class TileManager : MonoBehaviour {
         instance = this;
     }
 
+    public Vector3[,] sizesTiles = new Vector3[3, 2];
     public GameObject[,] tiles = new GameObject[4,3];
 
     // Use this for initialization
@@ -85,8 +86,22 @@ public class TileManager : MonoBehaviour {
                 }
             }
         }
-	}
+        setSizes();
+    }
 	
+
+    void setSizes()
+    {
+        //P1
+        sizesTiles[0,0]= new Vector3(0f,0f,0f);
+        sizesTiles[1,0]= new Vector3(0f,0f,0f);
+        sizesTiles[2,0]= new Vector3(0f,0f,0f);
+        //P2
+        sizesTiles[0,1]= new Vector3(0f,0f,0f);
+        sizesTiles[1,1]= new Vector3(0f,0f,0f);
+        sizesTiles[2,1]= new Vector3(0f,0f,0f);
+    }
+
 	// Update is called once per frame
 	void Update () {
 	

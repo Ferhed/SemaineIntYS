@@ -3,12 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class SpellManager : MonoBehaviour {
-
+    static SpellManager instance;
+    public static SpellManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+    void Awake()
+    {
+        instance = this;
+    }
     public GameObject[] monsters = new GameObject[4];
 
-    public int damageFireBall = 3;
-    public int damageExplosion = 2;
-    public int healAmount = 3;
+
+    public GameObject[] spells;
+
+    public int damageFireBall = 2;
+    public int damageExplosion = 1;
+    public int healAmount = 4;
     public Vector2 boost = Vector2.one;
 
     // Use this for initialization
@@ -30,11 +44,8 @@ public class SpellManager : MonoBehaviour {
         Spell(currentPlayer, 2);
     }
     public void SpellThree(int currentPlayer)
-    {
-        if (CanvaManager.Instance.player[currentPlayer - 1].GetComponent<PlayerScript>().AP >= 2)
-        {
-            Spell(currentPlayer, 3);
-        }
+    { 
+        Spell(currentPlayer, 3);
     }
     public void SpellFour(int currentPlayer)
     {
@@ -97,6 +108,13 @@ public class SpellManager : MonoBehaviour {
 
                 player.GetComponent<PlayerScript>().AP--;
                 player.GetComponent<PlayerScript>().UpdateSprites();
+
+
+                GameObject spawn = Instantiate(SpellManager.Instance.spells[3], go.transform.position, Quaternion.identity) as GameObject;
+                spawn.transform.Rotate(new Vector3(-90, 0, 0));
+                Destroy(spawn, 2f);
+
+
             }
 
         }
@@ -121,7 +139,7 @@ public class SpellManager : MonoBehaviour {
                     break;
                 case 3:
                     Explosion(currentPlayer);
-                    player.GetComponent<PlayerScript>().AP -= 2;
+                    player.GetComponent<PlayerScript>().AP--;
                     break;
                 case 4:
                     Heal(currentPlayer);
@@ -134,7 +152,9 @@ public class SpellManager : MonoBehaviour {
 
     void FireBall(int idPlayer)
     {
+
         GameObject player = CanvaManager.Instance.player[idPlayer - 1];
+        
         List<MonsterScript> monsterTarget = new List<MonsterScript>();
 
         Vector2[] posTab = new Vector2[4];
@@ -164,15 +184,41 @@ public class SpellManager : MonoBehaviour {
                 }
             }
         }
+        
+        GameObject go = Instantiate(spells[0], player.transform.position, Quaternion.identity) as GameObject;
+
 
         if (monsterTarget.Count > 0)
         {
-            Debug.Log(monsterTarget[0].name);
-            monsterTarget[0].GetComponent<MonsterScript>().receiveDamage(damageFireBall);
+            go.GetComponent<FireBall>().SetTarget(monsterTarget[0].gameObject, idPlayer);
         }
         else
         {
-            PlayerManager.Instance.playerList[idPlayer % 2].GetComponent<PlayerScript>().receiveDamage(damageFireBall);
+            GameObject target;
+            if (idPlayer == 1)
+            {
+                if(player.GetComponent<PlayerScript>().position == CanvaManager.POSITION.LEFT)
+                {
+                    target = CanvaManager.Instance.TilePlayer2[(int)CanvaManager.POSITION.RIGHT];
+                }
+                else
+                {
+                     target = CanvaManager.Instance.TilePlayer2[(int)player.GetComponent<PlayerScript>().position%2];
+                }
+            }
+            else
+            {
+                if (player.GetComponent<PlayerScript>().position == CanvaManager.POSITION.LEFT)
+                {
+                    target = CanvaManager.Instance.TilePlayer1[(int)CanvaManager.POSITION.RIGHT];
+                }
+                else
+                {
+                    target = CanvaManager.Instance.TilePlayer1[(int)player.GetComponent<PlayerScript>().position % 2];
+                }
+            }
+            go.GetComponent<FireBall>().SetTarget(target.gameObject, idPlayer);
+            //PlayerManager.Instance.playerList[idPlayer % 2].GetComponent<PlayerScript>().receiveDamage(damageFireBall);
         }
 
     }
@@ -212,34 +258,44 @@ public class SpellManager : MonoBehaviour {
 
         if (monsterTarget.Count > 0)
         {
-            Debug.Log(monsterTarget[0].name);
             monsterTarget[0].GetComponent<MonsterScript>().ReceiveBuff(boost);
         }
     }
 
     void Explosion(int idPlayer)
     {
-        GameObject player = CanvaManager.Instance.player[idPlayer - 1];
-
-        Vector2[] posTab = new Vector2[4];
-
-
+        Vector2[] posTab = new Vector2[3];
         if (idPlayer == 1)
         {
-            posTab[0] = new Vector2(0, (int)player.GetComponent<PlayerScript>().position);
+            posTab[0] = new Vector2(0, 0);
+            posTab[1] = new Vector2(0, 1);
+            posTab[2] = new Vector2(0, 2);
         }
         else
         {
-            posTab[0] = new Vector2(3, (int)player.GetComponent<PlayerScript>().position);
+            posTab[0] = new Vector2(3, 0);
+            posTab[1] = new Vector2(3, 1);
+            posTab[2] = new Vector2(3, 2);
         }
 
-        posTab[1] = getPos(posTab[0], idPlayer);
-        posTab[2] = getPos(posTab[1], idPlayer);
-        posTab[3] = getPos(posTab[2], idPlayer);
 
-        foreach (Vector2 tile in posTab)
+        StartCoroutine(Explosions(posTab, idPlayer));
+        
+        
+    }
+
+    IEnumerator Explosions(Vector2[] tiles, int idPlayer)
+    {
+        foreach (Vector2 tile in tiles)
         {
             GameObject GO = TileManager.Instance.tiles[(int)tile.x, (int)tile.y].GetComponent<TileScript>().monsterInside;
+
+            GameObject explosion = Instantiate(spells[1], TileManager.Instance.tiles[(int)tile.x, (int)tile.y].transform.position + Vector3.up / 2, Quaternion.identity) as GameObject;
+            explosion.transform.Rotate(new Vector3(-90, 0, 0));
+            Destroy(explosion, 2f);
+
+            SoundManager.Instance.playSound(SoundManager.Instance.explosion, 1f, TileManager.Instance.tiles[(int)tile.x, (int)tile.y]);
+
             if (GO)
             {
                 if (GO.GetComponent<MonsterScript>().id != idPlayer)
@@ -247,19 +303,24 @@ public class SpellManager : MonoBehaviour {
                     GO.GetComponent<MonsterScript>().receiveDamage(damageExplosion);
                 }
             }
+
+            yield return new WaitForSeconds (0.3f);
+
         }
     }
 
     void Heal(int idPlayer)
     {
         //fx soin
-        Debug.Log("heal !");
         CanvaManager.Instance.player[idPlayer - 1].GetComponent<PlayerScript>().life += healAmount;
 
         if (CanvaManager.Instance.player[idPlayer - 1].GetComponent<PlayerScript>().life > 20)
         {
             CanvaManager.Instance.player[idPlayer - 1].GetComponent<PlayerScript>().life = 20;
         }
+
+        CanvaManager.Instance.player[idPlayer - 1].transform.Find("Soin").GetComponent<ParticleSystem>().Play();
+        SoundManager.Instance.playSound(SoundManager.Instance.heal, 1f, CanvaManager.Instance.player[idPlayer - 1]);
     }
 
     Vector2 getPos(Vector2 currentPos, int id)

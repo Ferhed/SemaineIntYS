@@ -41,8 +41,7 @@ public class CanvaManager : MonoBehaviour {
 	void Start () {
 
         tilesSaved = new Transform[2];
-
-        DontDestroyOnLoad(this);
+        
 	}
 	
 	void Update () {
@@ -94,7 +93,8 @@ public class CanvaManager : MonoBehaviour {
 
     public void ClickListener(Transform t)
     {
-        if (t.GetComponent<TileScript>().idPlayer != TurnManager.Instance.currentPlayer) return;
+        if (t.GetComponent<TileScript>().idPlayer != TurnManager.Instance.currentPlayer ||TurnManager.Instance.gameFinished)
+            return;
 
         if(!tilesSaved[0])
         {
@@ -133,36 +133,48 @@ public class CanvaManager : MonoBehaviour {
                 if(currentTS.idPlayer == 1)
                 {
                     SetPosition(CanvaPlayer1[(int)CANVA.STAT], TilePlayer1[(int)POSITION.MID].transform);
+                    CanvaPlayer1[(int)CANVA.STAT].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.MID,0];
                     SetPosition(CanvaPlayer1[(int)CANVA.SPELL], TilePlayer1[(int)POSITION.RIGHT].transform);
+                    CanvaPlayer1[(int)CANVA.SPELL].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.RIGHT, 0];
                 }
                 else
                 {
                     SetPosition(CanvaPlayer2[(int)CANVA.STAT], TilePlayer2[(int)POSITION.MID].transform);
+                    CanvaPlayer2[(int)CANVA.STAT].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.MID, 1];
                     SetPosition(CanvaPlayer2[(int)CANVA.SPELL], TilePlayer2[(int)POSITION.RIGHT].transform);
+                    CanvaPlayer2[(int)CANVA.SPELL].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.RIGHT, 1];
                 }
                 break;
             case POSITION.MID:
                 if (currentTS.idPlayer == 1)
                 {
                     SetPosition(CanvaPlayer1[(int)CANVA.STAT], TilePlayer1[(int)POSITION.LEFT].transform);
+                    CanvaPlayer1[(int)CANVA.STAT].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.LEFT, 0];
                     SetPosition(CanvaPlayer1[(int)CANVA.SPELL], TilePlayer1[(int)POSITION.RIGHT].transform);
+                    CanvaPlayer1[(int)CANVA.SPELL].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.RIGHT, 0];
                 }
                 else
                 {
                     SetPosition(CanvaPlayer2[(int)CANVA.STAT], TilePlayer2[(int)POSITION.LEFT].transform);
+                    CanvaPlayer2[(int)CANVA.STAT].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.LEFT, 1];
                     SetPosition(CanvaPlayer2[(int)CANVA.SPELL], TilePlayer2[(int)POSITION.RIGHT].transform);
+                    CanvaPlayer2[(int)CANVA.SPELL].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.RIGHT, 1];
                 }
                 break;
             case POSITION.RIGHT:
                 if (currentTS.idPlayer == 1)
                 {
                     SetPosition(CanvaPlayer1[(int)CANVA.STAT], TilePlayer1[(int)POSITION.LEFT].transform);
+                    CanvaPlayer1[(int)CANVA.STAT].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.LEFT, 0];
                     SetPosition(CanvaPlayer1[(int)CANVA.SPELL], TilePlayer1[(int)POSITION.MID].transform);
+                    CanvaPlayer1[(int)CANVA.SPELL].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.MID, 0];
                 }
                 else
                 {
                     SetPosition(CanvaPlayer2[(int)CANVA.STAT], TilePlayer2[(int)POSITION.LEFT].transform);
+                    CanvaPlayer2[(int)CANVA.STAT].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.LEFT, 1];
                     SetPosition(CanvaPlayer2[(int)CANVA.SPELL], TilePlayer2[(int)POSITION.MID].transform);
+                    CanvaPlayer2[(int)CANVA.SPELL].transform.localPosition = TileManager.Instance.sizesTiles[(int)POSITION.MID, 1];
                 }
                 break;
         }

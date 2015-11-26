@@ -15,31 +15,37 @@ public class SoundManager : MonoBehaviour {
     {
         instance = this;
     }
+    
+    public AudioClip boost;
+    public AudioClip fireBall;
+    public AudioClip castleDamage;
+    public AudioClip explosion;
+    public AudioClip heal;
 
-	private int currentSound = 0;
 
-	public GameObject currentZik;
-
-	private AudioSource audioSource;
+    private AudioSource audioSource;
 
 	// Use this for initialization
 	void Start () {
-        DontDestroyOnLoad(this);
-		if(PlayerPrefs.GetInt ("sound")!= null)
-			currentSound = PlayerPrefs.GetInt ("sound");
 		audioSource = GetComponent<AudioSource> ();
-	}
+        DontDestroyOnLoad(this);
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+    }
 
-	public void playSound(AudioClip audio, float volume)
+	public void playSound(AudioClip audio, float volume, GameObject go)
 	{
-		GameObject currentMusique = (GameObject)Instantiate (currentZik, Vector3.zero, Quaternion.identity);
-		AudioSource needZik =  currentMusique.AddComponent<AudioSource>();
+        AudioSource needZik;
+        if (!go.GetComponent<AudioSource>())
+        {
+            needZik = go.AddComponent<AudioSource>();
+        }
+        else
+        {
+            needZik = go.GetComponent<AudioSource>();
+        }
 		needZik.clip = audio;
 		needZik.Play ();
-		if(currentSound == 0)
-			needZik.volume = volume;
-		else
-			needZik.volume = 0;
+	    needZik.volume = volume;
 	}
 
 }

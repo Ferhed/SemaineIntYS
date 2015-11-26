@@ -16,14 +16,15 @@ public class PlayerScript : MonoBehaviour {
     public SpriteRenderer lifeSprite;
     public SpriteRenderer APSprite;
 
-    // Use this for initialization
-    void Start () {
 
+    void Awake()
+    {
         lifeSprite = transform.Find("Life").GetComponent<SpriteRenderer>();
         APSprite = transform.Find("PAs").GetComponent<SpriteRenderer>();
+    }
 
-
-        PlayerManager.instance.addPlayer(this);
+    // Use this for initialization
+    void Start () {
 
         AP = 0;
 
@@ -35,11 +36,17 @@ public class PlayerScript : MonoBehaviour {
         lifeSprite.sprite = MenuManager.Instance.lifes[life];
         APSprite.sprite = MenuManager.Instance.APs[AP];
 
-        if (AP <= 0)
+        if (AP <= 0 && TurnManager.Instance.currentPlayer == id)
         {
-            Debug.Log(id);
 
             TurnManager.Instance.Endturn();
+        }
+        if(life == 0)
+        {
+            MenuManager.Instance.Affichage("Tu as perdu", id - 1, true);
+            MenuManager.Instance.Affichage("Tu es Victorieux", id % 2, true);
+            MenuManager.Instance.finishGame(id%2);
+            TurnManager.instance.gameFinished = true;
         }
     }
 
@@ -61,12 +68,14 @@ public class PlayerScript : MonoBehaviour {
     public void receiveDamage(int damage)
     {
         life -= damage;
-        Debug.Log(life + " Ouch !");
-        UpdateSprites();
         if (life <= 0)
         {
-            Debug.Log("loul j'ai perdu");
+            life = 0;
         }
+        screenshakeManager.instance.Shake(0.05f, 0.2f);
+        UpdateSprites();
+
+        SoundManager.Instance.playSound(SoundManager.Instance.castleDamage, 1f, gameObject);
     }
 
     public void MoveMonsters()
